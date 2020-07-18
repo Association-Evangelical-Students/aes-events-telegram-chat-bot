@@ -9,6 +9,7 @@ if [ ! -f "$AWS_CREDENTIALS_FILE" ]; then
   sls config credentials --provider aws --key $AWS_ACCESS_KEY --secret $AWS_SECRET --profile $AWS_PROFILE
 fi
 
+rm -rf dist
 yarn build
 
 serverless deploy
