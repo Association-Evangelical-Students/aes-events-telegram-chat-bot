@@ -1,7 +1,7 @@
 {
-  "name": "@lib/logger",
+  "name": "@lib/axios-client",
   "version": "0.0.0",
-  "description": "logger",
+  "description": "axios client",
   "main": "dist/index.js",
   "author": "Oleh Mushka <olegamysk@gmail.com>",
   "license": "MIT",
@@ -14,11 +14,11 @@
     "format": "prettier --write \"src/**/*.ts\""
   },
   "devDependencies": {
+    "@types/axios": "0.14.0",
     "@types/node": "14.0.12",
-    "@types/pino": "6.3.0",
     "typescript": "3.9.5"
   },
   "dependencies": {
-    "pino": "6.4.0"
+    "axios": "0.19.2"
   }
 }

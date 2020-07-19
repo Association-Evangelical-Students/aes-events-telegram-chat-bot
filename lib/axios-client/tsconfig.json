@@ -6,7 +6,7 @@
     "strictPropertyInitialization": false,
     "lib": ["es2019"],
     "module": "commonjs",
-    "target": "es2015",
+    "target": "es2016",
     "sourceMap": true,
     "moduleResolution": "node",
     "noImplicitReturns": true,
@@ -31,13 +31,9 @@
     ]
   },
   "include": [
-    "src/**/*",
-    "config/**/*",
-    "../../lib/**/*",
     "index.ts"
   ],
   "exclude": [
-    "node_modules",
-    "src/**/*.spec.ts"
+    "node_modules"
   ]
 }
