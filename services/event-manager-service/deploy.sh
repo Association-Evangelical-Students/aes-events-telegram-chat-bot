@@ -8,7 +8,7 @@ deploy()
 
   if [ ! -f "$AWS_CREDENTIALS_FILE" ]; then
     echo -e "Application default credentials ($AWS_CREDENTIALS_FILE) don't exist, please finish the flow.\n"
-    sls config credentials --provider aws --key $AWS_ACCESS_KEY --secret $AWS_SECRET --profile $AWS_PROFILE
+    serverless config credentials --provider aws --key $AWS_ACCESS_KEY --secret $AWS_SECRET --profile $AWS_PROFILE
   fi
 
   rm -rf dist

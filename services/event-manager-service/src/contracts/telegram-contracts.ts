@@ -59,12 +59,12 @@ export type InlineKeyboardButtonType = Static<typeof InlineKeyboardButton>;
 
 /* *** InlineKeyboardMarkup: start *** */
 export const TInlineKeyboardMarkup = TRecord({
-  inlineKeyboard: TArray(TInlineKeyboardButton),
+  inlineKeyboard: TArray(TArray(TInlineKeyboardButton)),
 });
 export type TInlineKeyboardMarkupType = Static<typeof TInlineKeyboardMarkup>;
 
 export const InlineKeyboardMarkup = TRecord({
-  inline_keyboard: TArray(InlineKeyboardButton),
+  inline_keyboard: TArray(TArray(InlineKeyboardButton)),
 });
 export type InlineKeyboardMarkupType = Static<typeof InlineKeyboardMarkup>;
 /* *** InlineKeyboardMarkup: end *** */

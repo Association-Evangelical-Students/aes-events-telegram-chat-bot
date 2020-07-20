@@ -1,8 +1,7 @@
 export class ValidationError extends Error {
   constructor(name?: string, message?: string) {
     super(name);
-    this.name = name ?? 'validation error';
-    this.message = message ?? '';
+    this.name = (name ?? '') + (message ?? '');
   }
 }
 

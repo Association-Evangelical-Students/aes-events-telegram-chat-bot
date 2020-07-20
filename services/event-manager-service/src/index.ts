@@ -1,19 +1,35 @@
 import { APIGatewayEvent, Context, Callback } from 'aws-lambda';
-import { Logger } from '../../../lib/logger';
-import { AxiosClient } from '../../../lib/axios-client';
+import { Logger } from '@Association-Evangelical-Students/logger';
+import { AxiosClient, IAxiosError } from '@Association-Evangelical-Students/axios-client';
 import { TelegramUpdate } from './contracts';
-import { TelegramBot } from './telegram-api';
+import { TelegramApi } from './telegram-api';
+import { StartScene } from './scenes';
 import config from '../config';
 
 const logger = new Logger({ level: 'info' });
-const telegramDefaultRequester = new AxiosClient({
+const telegramDefaultRequester = new AxiosClient(logger, {
   baseURL: `https://api.telegram.org/bot${config.TELEGRAM_TOKEN}`,
   timeout: 3000,
   headers: {
     'Content-Type': 'application/json',
   },
+  handlers: {
+    response: {
+      rejected: (error: IAxiosError): IAxiosError => {
+        logger.error({
+          error: {
+            statusCode: error?.response?.status,
+            data: error?.response?.data,
+          },
+        }, 'Axios Response Error');
+
+        return error;
+      }
+    },
+  },
 });
-const bot = new TelegramBot(telegramDefaultRequester);
+const api = new TelegramApi(telegramDefaultRequester);
+const startScene = new StartScene(api);
 
 export const handler = async (event: APIGatewayEvent, context: Context, callback: Callback): Promise<any> => {
   logger.info('Event: '+JSON.stringify(event.body));
@@ -29,15 +45,16 @@ export const handler = async (event: APIGatewayEvent, context: Context, callback
         body: JSON.stringify({ success: false }),
       };
     }
-    await bot.sendMessage({
-      chatId: update.message?.chat.id,
-      text: 'hello my friend',
-      parseMode: undefined,
-      disableWebPagePreview: undefined,
-      disableNotification: undefined,
-      replyToMessageId: undefined,
-      replyMarkup: undefined,
-    });
+
+    const result = await startScene.perform({ chatId: update.message?.chat.id })
+    if (result.isLeft()) {
+      logger.error({ error: result.value });
+
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ success: false }),
+      };
+    }
 
     return {
       statusCode: 200,

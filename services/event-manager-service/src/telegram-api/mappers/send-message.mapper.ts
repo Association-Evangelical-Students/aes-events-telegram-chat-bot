@@ -1,3 +1,4 @@
+import { Either, left, right } from '@sweet-monads/either';
 import { IMapper } from './common';
 import {
   TSendMessageOptions,
@@ -26,15 +27,17 @@ import {
 import { TelegramApiInternalValidationError } from '../../errors';
 
 export class SendMessageMapper implements IMapper<TSendMessageOptionsType, SendMessageOptionsType> {
-  public map(input: TSendMessageOptionsType): SendMessageOptionsType {
+  public map(input: TSendMessageOptionsType): Either<TelegramApiInternalValidationError, SendMessageOptionsType> {
     if (!TSendMessageOptions.guard(input)) {
-      throw new TelegramApiInternalValidationError(
-        'Input in sendMessageMapper does not comply signature TSendMessageOptions',
+      return left(
+        new TelegramApiInternalValidationError(
+          'Input in sendMessageMapper does not comply signature TSendMessageOptions',
+        ),
       );
     }
 
     try {
-      return SendMessageOptions.check({
+      const mapped = SendMessageOptions.check({
         chat_id: input.chatId,
         text: input.text,
         parse_mode: input.parseMode,
@@ -43,12 +46,18 @@ export class SendMessageMapper implements IMapper<TSendMessageOptionsType, SendM
         reply_to_message_id: input.replyToMessageId,
         reply_markup: this.mapReplyMarkup(input.replyMarkup),
       });
-    } catch ({ message }) {
-      throw new TelegramApiInternalValidationError('Mapped SendMessageOptions does not comply signature', message);
+
+      return right(mapped);
+    } catch (error) {
+      return left(
+        new TelegramApiInternalValidationError('Mapped SendMessageOptions does not comply signature', error),
+      );
     }
   }
 
-  private mapReplyMarkup(input?: TSendMessageReplyMarkupType): SendMessageReplyMarkupType | undefined {
+  private mapReplyMarkup(
+    input?: TSendMessageReplyMarkupType,
+  ): SendMessageReplyMarkupType | undefined {
     if (input === undefined) {
       return undefined;
     }
@@ -56,14 +65,16 @@ export class SendMessageMapper implements IMapper<TSendMessageOptionsType, SendM
     if (TInlineKeyboardMarkup.guard(input)) {
       try {
         return InlineKeyboardMarkup.check({
-          inline_keyboard: input.inlineKeyboard.map((keyboard) => ({
-            text: keyboard.text,
-            url: keyboard.url,
-            login_url: this.mapLoginUrl(keyboard.loginUrl),
-            callback_data: keyboard.callbackData,
-            switch_inline_query: keyboard.switchInlineQuery,
-            switch_inline_query_current_chat: keyboard.switchInlineQueryCurrentChat,
-          })),
+          inline_keyboard: input.inlineKeyboard.map(
+            k => k.map((keyboard) => ({
+              text: keyboard.text,
+              url: keyboard.url,
+              login_url: this.mapLoginUrl(keyboard.loginUrl),
+              callback_data: keyboard.callbackData,
+              switch_inline_query: keyboard.switchInlineQuery,
+              switch_inline_query_current_chat: keyboard.switchInlineQueryCurrentChat,
+            })),
+          ),
         });
       } catch ({ message }) {
         throw new TelegramApiInternalValidationError('Mapped InlineKeyboardMarkup does not comply signature', message);

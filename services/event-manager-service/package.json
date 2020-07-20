@@ -2,7 +2,7 @@
   "name": "events-handler",
   "version": "0.0.0",
   "description": "handler for managing events",
-  "main": "dist/services/event-manager-service/index.js",
+  "main": "dist/index.js",
   "repository": "https://github.com/Association-Evangelical-Students/aes-events-telegram-chat-bot.git",
   "author": "Oleh Mushka <olegamysk@gmail.com>",
   "license": "MIT",
@@ -35,6 +35,9 @@
     "typescript": "3.9.5"
   },
   "dependencies": {
+    "@Association-Evangelical-Students/axios-client": "0.1.2",
+    "@Association-Evangelical-Students/logger": "0.0.0",
+    "@sweet-monads/either": "^2.0.0",
     "aws-lambda": "1.0.6",
     "lodash": "^4.17.19",
     "pino": "6.4.0",
