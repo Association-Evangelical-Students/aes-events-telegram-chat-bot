@@ -1,37 +1,24 @@
-import { Either } from '@sweet-monads/either';
+import { Either, left } from '@sweet-monads/either';
 import { IScene, IPerformOptions } from '../common';
-import { TSendMessageOptionsType, TInlineKeyboardButtonType } from '../../../contracts';
+import { TSendMessageOptionsType, TInlineKeyboardButtonType, Roles } from '../../../contracts';
 import { ITelegramApi } from '../../../telegram-api';
+import { IEventsRepository } from '../../../repositories';
 
-const events = [
-  {
-    id: '1',
-    title: 'Event 1',
-  },
-  {
-    id: '2',
-    title: 'Event 2',
-  },
-  {
-    id: '3',
-    title: 'Event 3',
-  },
-  {
-    id: '4',
-    title: 'Event 4',
-  },
-  {
-    id: '5',
-    title: 'Event 5',
-  },
-];
+export class ShowEventsScene implements IScene<void> {
+  constructor(
+    private api: ITelegramApi,
+    private eventsRepo: IEventsRepository,
+  ) {}
 
-export class ShowEventsScene implements IScene {
-  constructor(private api: ITelegramApi) {}
-
-  public async perform(options: IPerformOptions): Promise<Either<unknown, void>> {
+  public async perform(options: IPerformOptions, _role: Roles): Promise<Either<Error, void>> {
     const chatId = options.telegramRequest.callback_query?.message?.chat.id;
-    const buttons = events.map(event => ([
+
+    const events = await this.eventsRepo.getAll();
+    if (events.isLeft()) {
+      return left(events.value as Error);
+    }
+
+    const buttons = events.value.map(event => ([
       {
         text: event.title,
         callbackData: `show-event:${event.id}`,

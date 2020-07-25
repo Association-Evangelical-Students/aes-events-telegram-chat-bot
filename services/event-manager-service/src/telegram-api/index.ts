@@ -5,7 +5,7 @@ import { SendMessageMapper } from './mappers';
 import { pickBy, identity } from '../utils';
 
 export interface ITelegramApi {
-  sendMessage(options: TSendMessageOptionsType): Promise<Either<unknown, void>>;
+  sendMessage(options: TSendMessageOptionsType): Promise<Either<Error, void>>;
 }
 
 export class TelegramApi implements ITelegramApi {
@@ -13,10 +13,10 @@ export class TelegramApi implements ITelegramApi {
 
   constructor(private telegramRequester: IAxiosClient) {}
 
-  public async sendMessage(options: TSendMessageOptionsType): Promise<Either<unknown, void>> {
+  public async sendMessage(options: TSendMessageOptionsType): Promise<Either<Error, void>> {
     const mapped = this.sendMessageMapper.map(options);
     if (mapped.isLeft()) {
-      return left(mapped.value);
+      return left(mapped.value as Error);
     }
     await this.telegramRequester.post('/sendMessage', pickBy(mapped.value, identity));
 

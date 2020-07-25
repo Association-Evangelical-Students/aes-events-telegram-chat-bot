@@ -1,10 +1,10 @@
 import { Either } from '@sweet-monads/either';
-import { TelegramUpdateType } from '../../contracts';
+import { TelegramUpdateType, Roles } from '../../contracts';
 
 export interface IPerformOptions {
   telegramRequest: TelegramUpdateType;
 }
 
-export interface IScene {
-  perform(options: IPerformOptions): Promise<Either<unknown, unknown>>
+export interface IScene<T> {
+  perform(options: IPerformOptions, role: Roles): Promise<Either<Error, T>>
 }

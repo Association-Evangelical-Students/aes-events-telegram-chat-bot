@@ -484,6 +484,7 @@ export type TelegramPassportDataType = Static<typeof TelegramPassportData>;
 /* *** TelegramMessage *** */
 export const TelegramMessage = TRecord({
   message_id: TNumber,
+  from: TelegramUser.Or(TUndefined),
   date: TNumber,
   chat: TelegramChat,
   forward_from: TelegramUser.Or(TUndefined),

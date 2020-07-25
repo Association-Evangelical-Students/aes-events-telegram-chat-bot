@@ -1,2 +1,2 @@
 export * from './show-events.scene';
-export * from './start.scene';
+export * from './start';

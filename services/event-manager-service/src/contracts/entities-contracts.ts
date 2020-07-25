@@ -7,8 +7,12 @@ import {
   Static,
 } from 'runtypes';
 
+export enum Roles {
+  Admin = 'ADMIN',
+  Regular = 'REGULAR',
+}
+
 export const PersonEntity = TRecord({
-  id: TString,
   telegramChatId: TNumber,
   telegramId: TNumber,
   firstName: TString,
@@ -20,8 +24,9 @@ export type PersonEntityType = Static<typeof PersonEntity>;
 export const EventEntity = TRecord({
   id: TString,
   title: TString,
-  photoUrls: TArray(TString).Or(TUndefined),
-  description: TString.Or(TUndefined),
+  photoUrls: TArray(TString),
+  description: TString,
   date: TString,
-}).withBrand('EventEntity');
+  participants: TArray(PersonEntity),
+});
 export type EventEntityType = Static<typeof EventEntity>;
