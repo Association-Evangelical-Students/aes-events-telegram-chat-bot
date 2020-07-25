@@ -1,35 +1,18 @@
 import { APIGatewayEvent, Context, Callback } from 'aws-lambda';
 import { Logger } from '@Association-Evangelical-Students/logger';
-import { AxiosClient, IAxiosError } from '@Association-Evangelical-Students/axios-client';
 import { TelegramUpdate } from './contracts';
 import { TelegramApi } from './telegram-api';
-import { StartScene } from './scenes';
-import config from '../config';
+import { requesterFabric, sceneFabric } from './fabrics';
+import { REQUESTER_FABRIC_TYPES } from './types';
+import { getSceneType } from './type-distributer';
 
 const logger = new Logger({ level: 'info' });
-const telegramDefaultRequester = new AxiosClient(logger, {
-  baseURL: `https://api.telegram.org/bot${config.TELEGRAM_TOKEN}`,
-  timeout: 3000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  handlers: {
-    response: {
-      rejected: (error: IAxiosError): IAxiosError => {
-        logger.error({
-          error: {
-            statusCode: error?.response?.status,
-            data: error?.response?.data,
-          },
-        }, 'Axios Response Error');
-
-        return error;
-      }
-    },
-  },
-});
-const api = new TelegramApi(telegramDefaultRequester);
-const startScene = new StartScene(api);
+const telegramDefaultRequester = requesterFabric(REQUESTER_FABRIC_TYPES.telegramDefault, logger);
+if (telegramDefaultRequester.isLeft()) {
+  logger.error('Telegram Default Requester error', telegramDefaultRequester.value);
+  process.exit(1);
+}
+const api = new TelegramApi(telegramDefaultRequester.value);
 
 export const handler = async (event: APIGatewayEvent, context: Context, callback: Callback): Promise<any> => {
   logger.info('Event: '+JSON.stringify(event.body));
@@ -37,16 +20,17 @@ export const handler = async (event: APIGatewayEvent, context: Context, callback
   try {
     const body = JSON.parse(event.body ?? '');
     const update = TelegramUpdate.check(body);
-    if (update.message?.chat.id === undefined) {
-      logger.error('can not extract chat ID');
 
+    const sceneType = getSceneType(update);
+    const scene = sceneFabric(sceneType, api);
+    if (scene.isLeft()) {
       return {
         statusCode: 500,
-        body: JSON.stringify({ success: false }),
+        body: JSON.stringify({ success: false, error: scene.value }),
       };
     }
 
-    const result = await startScene.perform({ chatId: update.message?.chat.id })
+    const result = await scene.value.perform({ telegramRequest: update })
     if (result.isLeft()) {
       logger.error({ error: result.value });
 

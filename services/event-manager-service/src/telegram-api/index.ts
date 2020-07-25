@@ -1,9 +1,8 @@
-import pickBy from 'lodash/pickBy';
-import identity from 'lodash/identity';
 import { Either, left, right } from '@sweet-monads/either';
 import { IAxiosClient } from '@Association-Evangelical-Students/axios-client';
 import { TSendMessageOptionsType } from '../contracts';
 import { SendMessageMapper } from './mappers';
+import { pickBy, identity } from '../utils';
 
 export interface ITelegramApi {
   sendMessage(options: TSendMessageOptionsType): Promise<Either<unknown, void>>;

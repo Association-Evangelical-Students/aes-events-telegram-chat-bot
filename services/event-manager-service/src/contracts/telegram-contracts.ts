@@ -535,6 +535,73 @@ export const TelegramMessage = TRecord({
 export type TelegramMessageType = Static<typeof TelegramMessage>;
 /* *** TelegramMessage: end *** */
 
+/* *** TelegramInlineQuery *** */
+export const TelegramInlineQuery = TRecord({
+  id: TString,
+  from: TelegramUser,
+  location: TelegramLocation.Or(TUndefined),
+  query: TString,
+  offset: TString.Or(TUndefined),
+});
+export type TelegramInlineQueryType = Static<typeof TelegramInlineQuery>;
+/* *** TelegramInlineQuery: end *** */
+
+/* *** TelegramChosenInlineResult *** */
+export const TelegramChosenInlineResult = TRecord({
+  result_id: TString,
+  from: TelegramUser,
+  location: TelegramLocation.Or(TUndefined),
+  inline_message_id: TString.Or(TUndefined),
+  offsqueryet: TString,
+});
+export type TelegramChosenInlineResultType = Static<typeof TelegramChosenInlineResult>;
+/* *** TelegramChosenInlineResult: end *** */
+
+/* *** TelegramShippingQuery *** */
+export const TelegramShippingQuery = TRecord({
+  id: TString,
+  from: TelegramUser,
+  invoice_payload: TString,
+  shipping_address: TelegramShippingAddress,
+});
+export type TelegramShippingQueryType = Static<typeof TelegramShippingQuery>;
+/* *** TelegramShippingQuery: end *** */
+
+/* *** TelegramCallbackQuery *** */
+export const TelegramCallbackQuery = TRecord({
+  id: TString,
+  from: TelegramUser,
+  message: TelegramMessage.Or(TUndefined),
+  inline_message_id: TString.Or(TUndefined),
+  chat_instance: TString,
+  data: TString.Or(TUndefined),
+  game_short_name: TString.Or(TUndefined),
+});
+export type TelegramCallbackQueryType = Static<typeof TelegramCallbackQuery>;
+/* *** TelegramCallbackQuery: end *** */
+
+/* *** TelegramPreCheckoutQuery *** */
+export const TelegramPreCheckoutQuery = TRecord({
+  id: TString,
+  from: TelegramUser,
+  currency: TString,
+  total_amount: TNumber,
+  invoice_payload: TString,
+  shipping_option_id: TString.Or(TUndefined),
+  order_info: TelegramOrderInfo.Or(TUndefined),
+});
+export type TelegramPreCheckoutQueryType = Static<typeof TelegramPreCheckoutQuery>;
+/* *** TelegramPreCheckoutQuery: end *** */
+
+/* *** TelegramPollAnswer *** */
+export const TelegramPollAnswer = TRecord({
+  poll_id: TString,
+  user: TelegramUser,
+  option_ids: TArray(TNumber),
+});
+export type TelegramPollAnswerType = Static<typeof TelegramPollAnswer>;
+/* *** TelegramPollAnswer: end *** */
+
 // Available Method's Types
 
 /* *** SendMessageOptions: start *** */
@@ -581,6 +648,16 @@ export type SendMessageOptionsType = Static<typeof SendMessageOptions>;
 export const TelegramUpdate = TRecord({
   update_id: TNumber,
   message: TelegramMessage.Or(TUndefined),
+  edited_message: TelegramMessage.Or(TUndefined),
+  channel_post: TelegramMessage.Or(TUndefined),
+  edited_channel_post: TelegramMessage.Or(TUndefined),
+  inline_query: TelegramInlineQuery.Or(TUndefined),
+  chosen_inline_result: TelegramChosenInlineResult.Or(TUndefined),
+  callback_query: TelegramCallbackQuery.Or(TUndefined),
+  shipping_query: TelegramShippingQuery.Or(TUndefined),
+  pre_checkout_query: TelegramPreCheckoutQuery.Or(TUndefined),
+  poll: TelegramPoll.Or(TUndefined),
+  poll_answer: TelegramPollAnswer.Or(TUndefined),
 });
 export type TelegramUpdateType = Static<typeof TelegramUpdate>;
 /* *** TelegramUpdate: end *** */
